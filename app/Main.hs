@@ -111,11 +111,26 @@ sequences = [ _test
 pixelize :: Double -> PixelRGB8
 pixelize signal = PixelRGB8 (fromIntegral r) (fromIntegral g) (fromIntegral b)
   where
-    -- trust me:
-    r = max 0 (min 255 ni)
-    g = max 0 ((max i ni) - 255)
-    b = max 0 (min 255 i)
-    i = round $ signal * 510
+
+    -- COMPLEX:
+    -- light:
+    -- r = 255 - (max 0 (min 255 ni))
+    -- g = 255 - (max 0 ((max i ni) - 255))
+    -- b = 255 - (max 0 (min 255 i))
+    -- dark:
+    -- r = max 0 (min 255 i)
+    -- g = max 0 ((max i ni) - 255)
+    -- b = max 0 (min 255 ni)
+
+    -- i = round $ signal * 510
+
+    -- SIMPLE M/C:
+    r = 255 - (max 0 i)
+    g = 255 - (max 0 ni)
+    b = 255
+
+    i = round $ signal * 255
+
     ni = -i
 
 -- calculate sines
