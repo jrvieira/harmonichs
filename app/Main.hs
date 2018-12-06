@@ -29,118 +29,133 @@ rgb(255,255,0)
 
 type Dimensions = (Int,Int)
 
--- named drawing functions
+-- named functions
 
-type F = Int -> Int
-
-data Function = Function { 
+data Sequence = Sequence { 
     name :: String,
-    apply :: F
+    nth :: Int -> Double
 }
 
--- functions
+-- test
 
-f_fibonacci :: Function
-f_fibonacci = Function "fibonacci" fibonacci
+_test :: Sequence
+_test = Sequence "test" f where
+  f n = 1
 
-f_primes :: Function
-f_primes = Function "primes" f where
-    f n = primes !! n
+-- sequences
 
-f_chromaticornth :: Function
-f_chromaticornth = Function "chromaticornth" f where
-    f n = let sub = 9 in n * 2 ^ (1 / sub)
+_harmonic :: Sequence
+_harmonic = Sequence "harmonic" f where
+  f n = fromIntegral n
 
-f_octave :: Function
-f_octave = Function "octave" f where
-    f n = n * 2
+_fibonacci :: Sequence
+_fibonacci = Sequence "fibonacci" f where
+  f n = fromIntegral $ fibonacci n
 
-f_graph :: Function
-f_graph = Function "graph" f where
-    f n = (n * (n-1)) / 2
+_primes :: Sequence
+_primes = Sequence "primes" f where
+  f n = fromIntegral $ primes !! n
 
-f_wholefractions :: Function
-f_wholefractions = Function "wholefractions" f where
-    f n = 1 / n
+_chromatic_or_nth :: Sequence
+_chromatic_or_nth = Sequence "chromatic_or_nth" f where
+  f n = fromIntegral n * 2 ** (1 / sub)
+  sub = 9
 
-f_wholefractionsreverse :: Function
-f_wholefractionsreverse = Function "wholefractionsreverse" f where
-    f n = 1 - 1 / n
+_octave :: Sequence
+_octave = Sequence "octave" f where
+  f n = fromIntegral n * 2
 
-f_even :: Function
-f_even = Function "even" f where
-    f n = 2 * n
+_graph :: Sequence
+_graph = Sequence "graph" f where
+  f n = (fromIntegral n * (fromIntegral n - 1)) / 2
 
-f_odd :: Function
-f_odd = Function "odd" f where
-    f n = 2 * n-1
+_wholefractions :: Sequence
+_wholefractions = Sequence "wholefractions" f where
+  f n = 1 / (fromIntegral n)
 
-f_whole :: Function
-f_whole = Function "whole" f where
-    f n = n / 2
+_wholefractionsreverse :: Sequence
+_wholefractionsreverse = Sequence "wholefractionsreverse" f where
+  f n = 1 - 1 / (fromIntegral n)
+
+_even :: Sequence
+_even = Sequence "even" f where
+  f n = fromIntegral $ 2 * n
+
+_odd :: Sequence
+_odd = Sequence "odd" f where
+  f n = fromIntegral $ 2 * n-1
+
+_whole :: Sequence
+_whole = Sequence "whole" f where
+  f n = fromIntegral n / 2
 
 
-functions :: [Function]
-functions = [
-    f_fibonacci,
-    f_primes,
-    f_chromaticornth,
-    f_octave,
-    f_graph,
-    f_wholefractions,
-    f_wholefractionsreverse,
-    f_even,
-    f_odd,
-    f_whole
+sequences :: [Sequence]
+sequences = [ _test
+  , _harmonic
+  , _fibonacci
+  , _primes
+  , _chromatic_or_nth
+  , _octave
+  , _graph
+  , _wholefractions
+  , _wholefractionsreverse
+  , _even
+  , _odd
+  , _whole
+
   ]
 
--- convert to pixel
+-- turn signal into pixel
 
-rgb :: Int -> PixelRGB8
--- i is always 0 ??
-rgb i = if i == 0 then let ni = -i in
-      PixelRGB8 0 0 255--0 (max 0 ni-255) (min 255 ni)
-    else
-      PixelRGB8 255 0 0--(min 255 i) (max 0 i-255) 0
+pixelize :: Double -> PixelRGB8
+pixelize signal = PixelRGB8 (fromIntegral r) (fromIntegral g) (fromIntegral b)
+  where
+    -- trust me:
+    r = max 0 (min 255 ni)
+    g = max 0 ((max i ni) - 255)
+    b = max 0 (min 255 i)
+    i = round $ signal * 510
+    ni = -i
 
 -- calculate sines
 
-sine :: Dimensions -> Function -> Int -> Int -> PixelRGB8
-sine d f x y' = trace ("rgb $ " ++ "2 * " ++ show (y / w) ++ " * " ++ show (apply f y) ++ " = " ++ show r) $ rgb i
+sine :: Dimensions -> Sequence -> Int -> Int -> PixelRGB8
+sine d s x y = pixelize signal
     where
-      y = y'+1
-      (w,h) = d
-      r = 2 * (y / w) * (apply f y)
-      i = round $ 510 * (sin (pi * fromIntegral r)) -- there are 1020 possible RGB colors in our spectrum: [-510..510]
+      w = fromIntegral $ fst d
+      p = fromIntegral x + 1
+      n = nth s y
+      signal = sin $ (p / w) * 2 * pi * n -- from [-1..1]
 
 -- draw
 
-draw :: Dimensions -> Function -> IO()
-draw d f = do
-    createDirectoryIfMissing True "io"
-    done <- doesFileExist file
-    if done then
-        putClrLn W (file ++ " skipped") -- print existing file to console
-    else do
-        savePngImage file (ImageRGB8 (generateImage (sine d f) w h))
-        putClrLn G file -- print drawn file to console
-    where
-        (w,h) = d
-        file = "io/" ++ show w ++ "x" ++ show h ++ "pixel_" ++ name f ++ ".png"
+draw :: Dimensions -> Sequence -> IO()
+draw d s = do
+  createDirectoryIfMissing True "io"
+  done <- doesFileExist file
+  if done then
+    putClrLn W (file ++ " skipped") -- print existing file to console
+  else do
+    savePngImage file (ImageRGB8 (generateImage (sine d s) w h))
+    putClrLn G file -- print drawn file to console
+  where
+    (w,h) = d
+    file = "io/" ++ show w ++ "x" ++ show h ++ "pixel_" ++ name s ++ ".png"
 
-draw_list :: Dimensions -> [Function] -> IO ()
+draw_list :: Dimensions -> [Sequence] -> IO ()
 draw_list d list = do
-   mapM_ (draw d) functions
+  mapM_ (draw d) sequences
 
 main :: IO ()
 main = do
-   args <- getArgs
-   if length args == 2 then let
-      (w:h:_) = map read args
-      in
-      draw_list (w,h) functions
-   else do
-      putClr R "args:"
-      putClrLn W "width height"
-      pure ()
-    
+  args <- getArgs
+  if length args == 2 then let
+    (w:h:_) = map read args
+    in
+    draw_list (w,h) sequences
+  else do
+    putClr R "args:"
+    putClrLn W "width height"
+    pure ()
+
