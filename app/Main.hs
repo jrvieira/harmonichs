@@ -6,7 +6,7 @@ import System.Directory
 import Codec.Picture
 import Color
 
-import Debug.Trace
+--import Debug.Trace
 
 {- gradient:
 
@@ -114,15 +114,15 @@ pixelize signal = PixelRGB8 (fromIntegral r) (fromIntegral g) (fromIntegral b)
 
     -- COMPLEX:
     -- light:
-    -- r = 255 - (max 0 (min 255 ni))
-    -- g = 255 - (max 0 ((max i ni) - 255))
-    -- b = 255 - (max 0 (min 255 i))
+    --r = 255 - (max 0 (min 255 ni))
+    --g = 255 - (max 0 ((max i ni) - 255))
+    --b = 255 - (max 0 (min 255 i))
     -- dark:
-    -- r = max 0 (min 255 i)
-    -- g = max 0 ((max i ni) - 255)
-    -- b = max 0 (min 255 ni)
+    --r = max 0 (min 255 i)
+    --g = max 0 ((max i ni) - 255)
+    --b = max 0 (min 255 ni)
 
-    -- i = round $ signal * 510
+    --i = round $ signal * 510
 
     -- SIMPLE M/C:
     r = 255 - (max 0 i)
