@@ -2,7 +2,7 @@
 
 draw acoustic analogue harmonic series visualizations
 
-###### harmonic series
+###### natural harmonic series
 ![screenshot](https://github.com/jrvieira/harmonichs/blob/master/io/1020x1020pixel_harmonic.png)
 
 ###### primes
