@@ -1,6 +1,6 @@
 # harmonichs
 
-draw acoustic analogue harmonic series visualizations
+draw acoustic analogue harmonic sequence visualizations
 
 ###### natural harmonic series
 ![screenshot](https://github.com/jrvieira/harmonichs/blob/master/io/1020x1020pixel_harmonic.png)
