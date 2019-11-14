@@ -31,7 +31,7 @@ type Dimensions = (Int,Int)
 
 -- named functions
 
-data Sequence = Sequence { 
+data Sequence = Sequence {
     name :: String,
     nth :: Int -> Double
 }
@@ -61,6 +61,17 @@ _chromatic_or_nth = Sequence "chromatic_or_nth" f where
   f n = fromIntegral n * 2 ** (1 / sub)
   sub = 9
 
+
+_chromatic_or_12 :: Sequence
+_chromatic_or_12 = Sequence "chromatic_or_12" f where
+  f n = fromIntegral n * 2 ** (1 / sub)
+  sub = 12
+
+_chromatic_or_19 :: Sequence
+_chromatic_or_19 = Sequence "chromatic_or_19" f where
+  f n = fromIntegral n * 2 ** (1 / sub)
+  sub = 19
+
 _octave :: Sequence
 _octave = Sequence "octave" f where
   f n = fromIntegral n * 2
@@ -89,6 +100,19 @@ _whole :: Sequence
 _whole = Sequence "whole" f where
   f n = fromIntegral n / 2
 
+{-
+_e :: Sequence
+_e = Sequence "e" f where
+  f n = 1 / (* e)
+    where
+      e = exp 1
+
+_phi :: Sequence
+_phi = Sequence "phi" f where
+  f n = 1 / (n*phi)
+    where
+      phi = (1+sqrt(5))/2
+-}
 
 sequences :: [Sequence]
 sequences = [ _test
@@ -96,6 +120,8 @@ sequences = [ _test
   , _fibonacci
   , _primes
   , _chromatic_or_nth
+  , _chromatic_or_12
+  , _chromatic_or_19
   , _octave
   , _graph
   , _wholefractions
@@ -103,7 +129,8 @@ sequences = [ _test
   , _even
   , _odd
   , _whole
-
+--  , _e
+--  , _phi
   ]
 
 -- turn signal into pixel
